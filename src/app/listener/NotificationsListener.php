@@ -2,9 +2,13 @@
 
 namespace App\Listeners;
 
+use Exception as GlobalException;
 use Phalcon\Events\Event;
 use Phalcon\Di\Injectable;
+use GuzzleHttp\Exception\ClientException;
+use GuzzleHttp\Client;
 use Phalcon\Exception;
+use Users;
 
 
 /**
@@ -12,6 +16,55 @@ use Phalcon\Exception;
  */
 class NotificationsListener extends Injectable
 {
+    /**
+     * get current user
+     *
+     * @param Event $event
+     * @param [type] $component
+     * @return void
+     */
+    public function refresh_token(
+        Event $event,
+        $component,
+        $token
+    ) {
+        $id = $this->di->get('config')->get('app')->get('client_id');
+        $secret = $this->di->get('config')->get('app')->get('client_secret');
+        $headers = [
+            'Content-Type' => 'application/x-www-form-urlencoded',
+            'Authorization' => 'Basic ' . base64_encode($id . ':' . $secret)
+        ];
+        $client = new Client([
+            'base_uri' => 'https://accounts.spotify.com',
+            'headers' => $headers
+        ]);
+        echo 'this';
+        die($token);
+        $user = Users::findFirst("token='" . $token . "'");
+        $url = ['grant_type' => 'refresh_token', 'refresh_token' => $user->refresh_token];
+        $result = json_decode($client->request('POST', '/api/token', ['form_params' => $url])->getBody(), true);
+        $token = $result['access_token'];
+        $this->di->get('session')->set('token', $token);
+        $user->token = $token;
+        $user->save();
+        return $token;
+    }
+    /**
+     * get current user
+     *
+     * @param Event $event
+     * @param [type] $component
+     * @return void
+     */
+    public function getCurrentUser(
+        Event $event,
+        $component
+    ) {
+        $token = $this->di->get('session')->get('token');
+        $result = json_decode($this->client->request('GET', 'https://api.spotify.com/v1/me?access_token=' . $token)->getBody(), true);
+        $session = $this->di->get('session');
+        $session->set('user', array('name' => $result['id'], 'id' => $result['display_name']));
+    }
     /**
      * get new release
      */
@@ -47,8 +100,16 @@ class NotificationsListener extends Injectable
         Event $event,
         $component
     ) {
-        $token = $this->session->get('token');
-        $result = json_decode($this->client->request('GET', 'me/playlists?access_token=' . $token)->getBody(), true)['items'];
+        $token = $this->di->get('session')->get('token');
+        try {
+            $result = json_decode($this->client->request('GET', 'me/playlists?access_token=' . $token)->getBody(), true)['items'];
+        } catch (Exception $e) {
+            die($e);
+        } catch (ClientException $e) {
+            $token = $this->di->get('EventsManager')->fire('notifications:refresh_token', $this, $token);
+            $result = json_decode($this->client->request('GET', 'me/playlists?access_token=' . $token)->getBody(), true)['items'];
+        }
+        
         $playlists = array();
         foreach ($result as $list) {
             array_push($playlists, array(
@@ -106,7 +167,14 @@ class NotificationsListener extends Injectable
     ) {
         $token = $this->session->get('token');
         $data = array();
-        $result = json_decode($this->client->request('GET', 'search?q=' . urlencode($back['name']) . '&type=' . $back['filter'] . '&access_token=' . $token)->getBody(), true);
+        try {
+            $result = json_decode($this->client->request('GET', 'search?q=' . urlencode($back['name']) . '&type=' . $back['filter'] . '&access_token=' . $token)->getBody(), true);
+        } catch (Exception $e) {
+            die($e);
+        } catch (ClientException $e) {
+            $token =$this->di->get('EventsManager')->fire('notifications:refresh_token', $this, $token);
+            $result = json_decode($this->client->request('GET', 'search?q=' . urlencode($back['name']) . '&type=' . $back['filter'] . '&access_token=' . $token)->getBody(), true);
+        }
 
         foreach ($result as $key => $albums) {
             $album = array();

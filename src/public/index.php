@@ -11,9 +11,12 @@ use Phalcon\Url;
 use Phalcon\Db\Adapter\Pdo\Mysql;
 use Phalcon\Session\Manager;
 use Phalcon\Session\Adapter\Stream;
+use Phalcon\Config\ConfigFactory;
 use Phalcon\Config;
 use GuzzleHttp\Client;
 use Phalcon\Events\Manager as EventsManager;
+use Phalcon\Escaper;
+use Phalcon\Flash\Direct as FlashDirect;
 
 $config = new Config([]);
 
@@ -80,6 +83,7 @@ $eventsManager->attach(
     new App\Listeners\NotificationsListener()
 );
 $application->setEventsManager($eventsManager);
+
 $container->set(
     'EventsManager',
     $eventsManager
@@ -96,26 +100,51 @@ $container->setShared('session', function () {
     $session->setAdapter($files)->start();
     return $session;
 });
+// Register the flash service with custom CSS classes
+$container->set(
+    'flash',
+    function () {
+        return new FlashDirect();
+    }
+);
+/**
+ * register escaper class
+ */
+$container->setShared(
+    'escaper',
+    function () {
+        return new Escaper();
+    }
+);
+/**
+ * register config
+ */
+$container->set(
+    'config',
+    function () {
+        $file_name = '../app/components/config.php';
+        $factory  = new ConfigFactory();
+        return $factory->newInstance('php', $file_name);
+    }
+);
 
-
-// $container->set(
-//     'db',
-//     function () {
-//         return new Mysql(
-//             [
-//                 'host'     => 'mysql-server',
-//                 'username' => 'root',
-//                 'password' => 'secret',
-//                 'dbname'   => 'blog',
-//             ]
-//         );
-//     }access_token {
-//         $mongo = new MongoClient();
-
-//         return $mongo->selectDB('phalt');
-//     },
-//     true
-// );
+/**
+ * register db service using config file
+ */
+$container->set(
+    'db',
+    function () {
+        $db = $this->get('config')->db;
+        return new Mysql(
+            [
+                'host'     => $db->host,
+                'username' => $db->username,
+                'password' => $db->password,
+                'dbname'   => $db->dbname,
+            ]
+        );
+    }
+);
 
 try {
     // Handle the request
