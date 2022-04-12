@@ -38,8 +38,6 @@ class NotificationsListener extends Injectable
             'base_uri' => 'https://accounts.spotify.com',
             'headers' => $headers
         ]);
-        echo 'this';
-        die($token);
         $user = Users::findFirst("token='" . $token . "'");
         $url = ['grant_type' => 'refresh_token', 'refresh_token' => $user->refresh_token];
         $result = json_decode($client->request('POST', '/api/token', ['form_params' => $url])->getBody(), true);
@@ -69,21 +67,26 @@ class NotificationsListener extends Injectable
      * get new release
      */
 
-    public function newRelease(
+    public function myRecommendation(
         Event $event,
         $component
     ) {
         $token = $this->session->get('token');
-        $result = json_decode($this->client->request('GET', 'browse/new-releases?&type=track&access_token=' . $token)->getBody(), true);
+        try{
+            $result = json_decode($this->client->request('GET', '/recommendations?seed_artists=3Nrfpe0tUJi4K4DXYWgMUX&seed_genres=kpop&seed_tracks=1Yo63a5AzPMyHiYMKYIrld&access_token=' . $token)->getBody(), true)['tracks'];
+        } catch (ClientException $e) {
+            $token = $this->di->get('EventsManager')->fire('notifications:refresh_token', $this, $token);
+            $result = json_decode($this->client->request('GET', 'recommendations?seed_artists=3Nrfpe0tUJi4K4DXYWgMUX&seed_genres=kpop&seed_tracks=1Yo63a5AzPMyHiYMKYIrld&access_token=' . $token)->getBody(), true)['tracks'];
+        }
         $albums = array();
-        foreach ($result['albums']['items'] as $item) {
+        foreach ($result as $item) {
             array_push($albums, array(
-                'artist' => $item['artists'][0]['name'],
-                'name' => $item['name'],
-                'release_date' => $item['release_date'],
-                'image' => $item['images'][0],
-                'id' => $item['id'],
-                'type' => $item['album_type']
+                'artist' => $item['album']['artists'][0]['name'],
+                'name' => $item['album']['name'],
+                'release_date' => $item['album']['release_date'],
+                'image' => $item['album']['images'][0]['url'] ?? '',
+                'id' => $item['album']['id'],
+                'type' => $item['album']['album_type']
 
             ));
         }
@@ -136,10 +139,14 @@ class NotificationsListener extends Injectable
         $id
     ) {
         $token = $this->session->get('token');
-        $result = json_decode($this->client->request('GET', 'playlists/' . $id . '/tracks?access_token=' . $token)->getBody(), true)['items'];
-        // echo '<pre>';
-        // print_r($result);
-        // die;
+        try {
+            $result = json_decode($this->client->request('GET', 'playlists/' . $id . '/tracks?access_token=' . $token)->getBody(), true)['items'];
+        } catch (Exception $e) {
+            die($e);
+        } catch (ClientException $e) {
+            $token = $this->di->get('EventsManager')->fire('notifications:refresh_token', $this, $token);
+            $result = json_decode($this->client->request('GET', 'playlists/' . $id . '/tracks?access_token=' . $token)->getBody(), true)['items'];
+        }
         $tracks = array();
         foreach ($result as $list) {
             array_push($tracks, array(

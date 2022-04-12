@@ -1,8 +1,3 @@
-<?php
-// print_r($user);
-print_r($token);
-// die;
-?>
 </section>
 <h1>Hello <?php echo $user['name'] ?? 'Guest' ?></h1>
 <!-- products section -->
@@ -40,6 +35,18 @@ print_r($token);
                       </div>';
                     }
                 }
+            }
+        } else {
+            foreach($recommendations as $track){
+                echo '<div class="card shadow m-2" style="width: 22rem;">
+                        <img src="' .$track['image'] . '" class="card-img-top" alt="...">
+                        <div class="card-body">
+                          <h5 class="card-title">' . $track['name'] . '</h5>
+                          <p class="card-text">Artist :'.$track['artist'].'.</p>
+                          <p class="card-text">Release Date :'.$track['release_date'].'.</p>
+                          <p class="card-text">Type :'.$track['type'].'.</p>
+                        </div>
+                      </div>';
             }
         }
             ?>
