@@ -1,0 +1,422 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <title>Spotify</title>
+
+    <!-- jquery cdn -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Bootstrap core CSS -->
+    <!-- Bootstrap core CSS -->
+    <link href="../node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@5.15.4/css/fontawesome.min.css" integrity="sha384-jLKHWM3JRmfMU0A5x5AkjWkw/EYfGUAGagvnfryNV3F9VqM98XiIH7VBGVoxVSc7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        * {
+            box-sizing: border-box
+        }
+
+        #search {
+            outline: none;
+            border: none;
+            display: inline-block
+        }
+
+        #burgundy {
+            color: rgb(153, 40, 59)
+        }
+
+        #orange,
+        select,
+        .btn {
+            color: orange
+        }
+
+        .fa-search {
+            font-size: 20px;
+            padding: 10px;
+            margin-bottom: 3px;
+            padding-right: 20px
+        }
+
+        .search-nav-item {
+            height: 40px
+        }
+
+        nav {
+            padding: 0px 100px
+        }
+
+        .fa-user-o,
+        .fa-shopping-cart {
+            font-size: 20px;
+            padding: 4px
+        }
+
+        .form-group {
+            margin-bottom: 5px
+        }
+
+        label {
+            padding-left: 10px
+        }
+
+        .form-group:last-child {
+            margin-bottom: 0
+        }
+
+        h6 {
+            margin-bottom: 0px
+        }
+
+        #sort {
+            outline: none;
+            border: none
+        }
+
+        .btn {
+            border: 1px solid orange;
+            border-radius: 10px;
+            background-color: #fff
+        }
+
+        .btn:hover {
+            color: #fff;
+            background-color: orange
+        }
+
+        .card-body {
+            padding: 8px
+        }
+
+        .sign {
+            width: 25px;
+            height: 25px
+        }
+
+        .discount {
+            border: 1px solid orange;
+            border-radius: 5px;
+            width: 65px;
+            position: absolute;
+            top: 2%
+        }
+
+        @media(min-width:1200px) {
+            #search {
+                width: 300px;
+                padding: 5px;
+                padding-left: 20px
+            }
+
+            .search-nav-item {
+                margin-left: 400px;
+                width: 350px
+            }
+
+            .fa-user-o {
+                margin-left: 300px
+            }
+
+            .text {
+                display: none
+            }
+
+            .fa-user-o,
+            .fa-shopping-cart {
+                font-size: 20px;
+                padding-left: 20px
+            }
+
+            #sidebar {
+                width: 30%;
+                padding: 20px;
+                float: left
+            }
+
+            #products {
+                width: 70%;
+                padding: 10px;
+                margin: 0;
+                float: right
+            }
+
+            .card {
+                width: 300px;
+                height: 330px;
+                border: none
+            }
+
+            .card-img-top {
+                width: 295px;
+                height: 200px;
+                border-radius: 10px
+            }
+
+            del {
+                padding-right: 2px
+            }
+
+            .filter,
+            #mobile-filter {
+                display: none
+            }
+        }
+
+        @media(min-width:992px) and (max-width:1199px) {
+            #search {
+                width: 300px;
+                padding: 5px;
+                padding-left: 20px
+            }
+
+            .search-nav-item {
+                margin-left: 200px;
+                width: 350px
+            }
+
+            .fa-user-o {
+                margin-left: 160px
+            }
+
+            .text {
+                display: none
+            }
+
+            #sidebar {
+                width: 30%;
+                padding: 20px;
+                float: left
+            }
+
+            #products {
+                width: 70%;
+                padding: 10px;
+                margin: 0;
+                float: right
+            }
+
+            .card {
+                width: 200px;
+                height: 330px;
+                border: none
+            }
+
+            .card-img-top {
+                width: 200px;
+                height: 200px;
+                border-radius: 10px
+            }
+
+            .fa-plus,
+            .fa-minus {
+                font-size: 12px
+            }
+
+            .sign {
+                height: 25px
+            }
+
+            .price {
+                width: 99px
+            }
+
+            .filter,
+            #mobile-filter {
+                display: none
+            }
+        }
+
+        @media(min-width:768px) and (max-width:991px) {
+            #search {
+                width: 300px;
+                padding: 5px;
+                padding-left: 20px
+            }
+
+            .search-nav-item {
+                margin-left: 60px;
+                width: 350px
+            }
+
+            .fa-user-o {
+                margin-left: 80px
+            }
+
+            .text {
+                display: none
+            }
+
+            #sidebar {
+                width: 35%;
+                padding: 20px;
+                float: left
+            }
+
+            #products {
+                width: 65%;
+                padding: 10px;
+                margin: 0;
+                float: right
+            }
+
+            .card {
+                border: none
+            }
+
+            .filter,
+            #mobile-filter {
+                display: none
+            }
+        }
+
+        @media(min-width:576px) and (max-width:767px) {
+            .text {
+                display: none
+            }
+
+            .search-nav-item {
+                margin-left: 35px;
+                width: 270px
+            }
+
+            #search {
+                width: 240px;
+                padding: 5px;
+                padding-left: 20px
+            }
+
+            .fa-search {
+                padding: 3px;
+                font-size: 18px
+            }
+
+            #sidebar {
+                width: 40%;
+                padding: 20px;
+                float: left
+            }
+
+            #products {
+                width: 60%;
+                padding: 10px;
+                margin: 0;
+                float: right
+            }
+
+            .card {
+                border: none
+            }
+
+            #off {
+                padding-left: 2px
+            }
+
+            #sorting span,
+            #res {
+                font-size: 14px
+            }
+
+            .filter,
+            #mobile-filter {
+                display: none
+            }
+        }
+
+        @media(max-width:575px) {
+            .search-nav-item {
+                margin: 0;
+                width: 100%;
+                margin-top: 10px
+            }
+
+            #search {
+                width: 80%;
+                padding-left: 10px;
+                margin-top: 10px;
+                padding-right: 10px
+            }
+
+            .fa-search {
+                padding: 10px;
+                font-size: 18px
+            }
+
+            #sidebar {
+                display: none
+            }
+
+            .filter {
+                margin-left: 70%;
+                margin-top: 2%
+            }
+
+            #sorting,
+            #res {
+                font-size: 12px;
+                margin-top: 2%
+            }
+
+            .c {
+                height: 400px;
+            }
+
+            .table-img {
+                height: 25px;
+            }
+        }
+    </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+</head>
+
+<body>
+
+    <div class="container-fluid">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <a class="navbar-brand ml-2 font-weight-bold" href="#">
+                <span id="burgundy">The</span>
+                <span id="orange">Music</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav">
+                <li class="nav-item active">
+                        <a class="nav-link" href="http://localhost:8080/index">Home<span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item active">
+                        <a class="nav-link" href="http://localhost:8080/playlist/index">My Playlists<span class="sr-only">(current)</span></a>
+                    </li>
+                    <li class="nav-item">
+                        <form action="http://localhost:8080/login/index" method="post">
+                            <?php
+                            echo $this->tag->linkTo(
+                                [
+                                    "login/index",
+                                    "Log in",
+                                    'class'=>'nav-link'
+                                ]
+                            );
+
+                            ?>
+                        </form>
+                    </li>
+                </ul>
+            </div>
+        </nav>
+        <?php echo $this->getContent();
+        echo PHP_EOL;
+        ?>
+    </div>
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="assets/script.js"></script>
+</body>
+
+</html>
+<?php

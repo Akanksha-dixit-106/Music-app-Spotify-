@@ -1,0 +1,28 @@
+<div class="container">
+    
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Title</th>
+                <th scope="col">Artist</th>
+                <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <?php
+            foreach ($tracks as $track) {
+                echo '<tr>
+            <th scope="row"><img height="50" src="' . $track['image'] . '"></th>
+            <td>' . $track['name'] . '</td>
+            <td>' . $track['artist'] . '</td>
+            <td>
+          
+            <a href="/playlist/removeTrack/' . $track['playlist'] . '/' . $track['id'] . '">Remove</a>
+            </td>
+          </tr>';
+            }
+            ?>
+        </tbody>
+    </table>
+</div>
