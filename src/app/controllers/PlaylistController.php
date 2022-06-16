@@ -1,5 +1,4 @@
 <?php
-session_start();
 
 use Phalcon\Mvc\Controller;
 use Phalcon\Mvc\Model\Manager;

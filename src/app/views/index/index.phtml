@@ -1,51 +1,5 @@
-<div class="filter">
-    <button class="btn btn-default" type="button" data-toggle="collapse" data-target="#mobile-filter" aria-expanded="true" aria-controls="mobile-filter">Filters
-        <span class="fa fa-filter pl-1"></span></button>
-</div>
-</div>
-<!-- Sidebar filter section -->
-<section id="sidebar">
-    <p> Home</p>
-    <div class="border-bottom pb-2 ml-2">
-        <h4 id="burgundy">Filters</h4>
-    </div>
-    <div class="py-2 border-bottom ml-3">
-        <h6 class="font-weight-bold">Categories</h6>
-        <div id="orange"><span class="fa fa-minus"></span></div>
-        <form method="post">
-            <input type="submit" class="btn btn-primary">
-            <div class="form-group">
-                <input type="text" name="search" class="bg-light" placeholder="Search tracks,albums,artist">
-            </div>
-
-            <div class="form-group">
-                <input type="checkbox" name="check_list[]" value="album" id="artisan">
-                <label for="artisan">Album</label>
-            </div>
-            <div class="form-group">
-                <input type="checkbox" name="check_list[]" value="playlist" id="breakfast">
-                <label for="breakfast">Playlists</label>
-            </div>
-            <div class="form-group">
-                <input type="checkbox" name="check_list[]" value="artist" id="healthy">
-                <label for="healthy">Artist</label>
-            </div>
-            <div class="form-group">
-                <input type="checkbox" name="check_list[]" value="track" id="artisan">
-                <label for="artisan">Track</label>
-            </div>
-            <div class="form-group">
-                <input type="checkbox" name="check_list[]" value="show" id="breakfast">
-                <label for="breakfast">Show</label>
-            </div>
-            <div class="form-group">
-                <input type="checkbox" name="check_list[]" value="episode" id="healthy">
-                <label for="healthy">Episode</label>
-            </div>
-        </form>
-    </div>
-
 </section>
+<h1>Hello <?php echo $user['name'] ?? 'Guest' ?></h1>
 <!-- products section -->
 <section id="products">
     <div class="container">
@@ -81,6 +35,18 @@
                       </div>';
                     }
                 }
+            }
+        } else {
+            foreach($recommendations as $track){
+                echo '<div class="card shadow m-2" style="width: 22rem;">
+                        <img src="' .$track['image'] . '" class="card-img-top" alt="...">
+                        <div class="card-body">
+                          <h5 class="card-title">' . $track['name'] . '</h5>
+                          <p class="card-text">Artist :'.$track['artist'].'.</p>
+                          <p class="card-text">Release Date :'.$track['release_date'].'.</p>
+                          <p class="card-text">Type :'.$track['type'].'.</p>
+                        </div>
+                      </div>';
             }
         }
             ?>
